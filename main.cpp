@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 				// give color value
 				if (scene.check_intersection(ray, t, material, un)) //change order of attritubes
 				{
-					Vec3i color = scene.calculate_color(ray, t, un, material, scene.max_recursion_depth);
+					Vec3i color = scene.calculate_color(ray, t, un, material, scene.max_recursion_depth); //calculate_color define
 					image[index++] = color.x;//R
 					image[index++] = color.y;//G
 					image[index++] = color.z;//B
@@ -130,3 +130,21 @@ int main(int argc, char* argv[])
     write_ppm(argv[2], image, width, height);
 
 }
+/* //PASS A SCENE AS AN ARGUMENT OR HAVE IT IN PARSER
+Vec3i computeAmbientLight(Ray ray, float& t, Material& material, Vec3f& un)
+{
+	Vec3f colorAmbient;
+	colorAmbient.x = (int)ambient_light.x * material.ambient.x;
+	colorAmbient.y = (int)ambient_light.y * material.ambient.y;
+	colorAmbient.z = (int)ambient_light.z * material.ambient.z;
+
+}
+
+float clamping(float intensityValue)
+{
+	if (intensityValue > 255.0)
+		return 255.0;
+	else
+		return intensityValue;
+}
+*/

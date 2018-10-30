@@ -218,58 +218,80 @@ void parser::Scene::loadFromXml(const std::string& filepath)
 bool parser::Scene::isIntersected(Ray ray, float& t, Material& imat, Vec3f& un)
 {
 	float tMin = numeric<float>::infinity();
-	for (int sphereIndexereIndex = 0; sphereIndex < sphereIndexeres_size; sphereIndex++) //soze from initScene
+	int sphereNumber = spheres.size();
+	int triangleNumber = triangles.size();
+	int meshNumber = meshes.size();
+	int meshInstanceNumber = meshIstances.size();
+	for (int sphereIndex = 0; sphereIndex < sphereNumber; sphereIndex++) //soze from initScene
 	{
-		if (sphereIndexeres[sphereIndex].is_intersect(ray, t) && t<tmin)
+		if (sphereIndexeres[sphereIndex].is_intersect(ray, t) && t<tMin)
 		{
-			tmin = t;
+			tMin = t;
 			imat = sphereIndexeres[sphereIndex].mat;
 			//sphereIndexeres[sphereIndex].compute_normal(ray.origin+ray.direction*t);
 			un = sphereIndexeres[sphereIndex].unit_normal;
 		}
 	}
 
-	for (int tri = 0; tri < triangles_size; tri++)
+	for (int triangleIndex = 0; triangleIndex < triangleNumber; triangleIndex++)
 	{
-		if (triangles[tri].is_intersect(ray, t) && t<tmin)
+		if (triangles[triangleIndex].is_intersect(ray, t) && t<tMin)
 		{
-			tmin = t;
-			imat = triangles[tri].mat;
-			un = triangles[tri].unit_normal;
+			tMin = t;
+			imat = triangles[triangleIndex].mat;
+			un = triangles[triangleIndex].unit_normal;
 		}
 	}
 
-	for (int msh = 0; msh < meshes_size; msh++)
+	for (int meshIndex = 0; meshIndex < meshes_size; meshIndex++)
 	{
-		for (int f = 0; f < meshes[msh].faces.size(); f++)
+		for (int f = 0; f < meshes[meshIndex].faces.size(); f++)
 		{
-			if (meshes[msh].mtriangles[f].is_intersect(ray, t) && t<tmin)
+			if (meshes[meshIndex].mtriangles[f].is_intersect(ray, t) && t<tMin)
 			{
-				tmin = t;
-				imat = meshes[msh].mtriangles[f].mat;
-				un = meshes[msh].mtriangles[f].unit_normal;
+				tMin = t;
+				imat = meshes[meshIndex].mtriangles[f].mat;
+				un = meshes[meshIndex].mtriangles[f].unit_normal;
 			}
 		}
 	}
 
-	for (int ins = 0; ins < meshInstance_size; ins++)
+	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstance_size; meshInstanceIndex++)
 	{
-		for (int f = 0; f < meshInstances[ins].baseMesh.faces.size(); f++)
+		for (int f = 0; f < meshInstances[meshInstanceIndex].baseMesh.faces.size(); f++)
 		{
-			if (meshInstances[ins].baseMesh.mtriangles[f].is_intersect(ray, t) && t<tmin)
+			if (meshInstances[meshInstanceIndex].baseMesh.mtriangles[f].is_intersect(ray, t) && t<tMin)
 			{
-				tmin = t;
-				imat = meshInstances[ins].baseMesh.mtriangles[f].mat;
-				un = meshInstances[ins].baseMesh.mtriangles[f].unit_normal;
+				tMin = t;
+				imat = meshInstances[meshInstanceIndex].baseMesh.mtriangles[f].mat;
+				un = meshInstances[meshInstanceIndex].baseMesh.mtriangles[f].unit_normal;
 			}
 		}
 	}
 
-	t = tmin;
+	t = tMin;
 
-	if (tmin != numeric_limits<float>::infinity())
+	if (tMin != numeric_limits<float>::infinity())
 		return true;
 	else
 		return false;
 }
 
+/* //IF USING THESE HERE,ADD THEIR DECLARATION IN PARSER HEADER FILE!!!
+Vec3i parser::Scene::computeAmbientLight(Ray ray, float& t, Material& material, Vec3f& un)
+{
+	Vec3f colorAmbient;
+	colorAmbient.x = (int)ambient_light.x * material.ambient.x;
+	colorAmbient.y = (int)ambient_light.y * material.ambient.y;
+	colorAmbient.z = (int)ambient_light.z * material.ambient.z;
+
+}
+
+float clamping(float intensityValue)
+{
+	if (intensityValue > 255.0)
+		return 255.0;
+	else
+		return intensityValue;
+}
+*/
