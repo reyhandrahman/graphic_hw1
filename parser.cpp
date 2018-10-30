@@ -277,13 +277,13 @@ bool parser::Scene::isIntersected(Ray ray, float& t, Material& imat, Vec3f& un)
 		return false;
 }
 
-/* //IF USING THESE HERE,ADD THEIR DECLARATION IN PARSER HEADER FILE!!!
+ //IF USING THESE HERE,ADD THEIR DECLARATION IN PARSER HEADER FILE!!!
 Vec3i parser::Scene::computeAmbientLight(Ray ray, float& t, Material& material, Vec3f& un)
 {
 	Vec3f colorAmbient;
-	colorAmbient.x = (int)ambient_light.x * material.ambient.x;
-	colorAmbient.y = (int)ambient_light.y * material.ambient.y;
-	colorAmbient.z = (int)ambient_light.z * material.ambient.z;
+	colorAmbient.x = (int)clamping(ambient_light.x * material.ambient.x);
+	colorAmbient.y = (int)clamping(ambient_light.y * material.ambient.y);
+	colorAmbient.z = (int)clamping(ambient_light.z * material.ambient.z);
 
 }
 
@@ -294,4 +294,5 @@ float clamping(float intensityValue)
 	else
 		return intensityValue;
 }
-*/
+
+//*****************************CALCULATE RAY-TRIANGLE INTERSECTION AND RAY-SPHERE INTERSECTION***********************************************////////////USE BLITZ LIBRARY FOR MATRICE OPERATIONS

@@ -39,13 +39,13 @@ int main(int argc, char* argv[])
 		Vec3f s;
 		float su, sv;
 
-		Vec3f m = e + ((w*(-1))*distance);
+		Vec3f m = e + ((w*(-1))*distance); //REPLACE W*-1 WITH GAZE 
 		Vec3f q = m + u * l + v * t;
 
 		
 
-		//float rlw = (r - l) / width;
-		//float tbh = (t - b) / height;
+		float rightToLeftUnit = (r - l) / width;
+		float topToBottomUnit = (t - b) / height;
 
 		unsigned char* image = new unsigned char[width * height * 3];
 
@@ -56,32 +56,32 @@ int main(int argc, char* argv[])
 			for (int i = 0; i < width; ++i)
 			{
 				//compute s
-				su = ((r - l) / width) * (i + 0.50);
-				sv = ((t - b) / height) * (j + 0.50);
-				s = q + u * su - v * sv;
+				su = rightToLeftUnit * (i + 0.50);
+				sv = topToBottomUnit * (j + 0.50);
+				s = q + (u * su) - (v * sv);
 
-				Vec3f se = (s - e).normalize; //change name of se!!!
+				Vec3f rayDirection = (s - e).normalize; 
 				//se = se.normalize();
 
-				Ray ray(e, se);
+				Ray ray(e, rayDirection); //DEFINE WHAT'S A RAY
 
 				float t;
 				Material material;
 				Vec3f un;
 
 				// give color value
-				if (scene.check_intersection(ray, t, material, un)) //change order of attritubes
+				if (scene.check_intersection(ray, t, material, un)) 
 				{
-					Vec3i color = scene.calculate_color(ray, t, un, material, scene.max_recursion_depth); //calculate_color define
-					image[index++] = color.x;//R
-					image[index++] = color.y;//G
-					image[index++] = color.z;//B
+					Vec3i color = scene.computeAmbientLight(ray, t, un, material, scene.max_recursion_depth); //calculate_color define
+					image[index++] = color.x;
+					image[index++] = color.y;
+					image[index++] = color.z;
 				}
 				else
 				{
-					image[index++] = scene.background_color.x;//R
-					image[index++] = scene.background_color.y;//G
-					image[index++] = scene.background_color.z;//B
+					image[index++] = scene.background_color.x;
+					image[index++] = scene.background_color.y;
+					image[index++] = scene.background_color.z;
 				}
 			}
 		}
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
     write_ppm(argv[2], image, width, height);
 
 }
-/* //PASS A SCENE AS AN ARGUMENT OR HAVE IT IN PARSER
+/* //PASS A SCENE AS AN ARGUMENT OR HAVE IT IN PARSER-time inefficient???
 Vec3i computeAmbientLight(Ray ray, float& t, Material& material, Vec3f& un)
 {
 	Vec3f colorAmbient;

@@ -93,7 +93,9 @@ namespace parser
 
         //Functions
         void loadFromXml(const std::string& filepath);
-		bool isIntersected(Ray ray, float& t, Material& imat, Vec3f& un);	
+		bool isIntersected(Ray ray, float& t, Material& imat, Vec3f& un);
+		Vec3i computeAmbientLight(Ray ray, float& t, Material& material, Vec3f& un);
+
     };
 
 }
