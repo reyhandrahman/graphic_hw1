@@ -14,7 +14,78 @@ int main(int argc, char* argv[])
     // The code below creates a test pattern and writes
     // it to a PPM file to demonstrate the usage of the
     // ppm_write function.
+	//**************************************************
+	for (int cameraIndex = 0; cameraIndex < scene.cameras.size(); cameraIndex++)
+	{
+		int imageWidth = scene.cameras[cameraIndex].image_width;
+		int imageHeight = scene.cameras[cameraIndex].image_height;
 
+		Vec3f e = scene.cameras[cameraIndex].position;
+		Vec3f w = (-1) * scene.cameras[cameraIndex].gaze;
+		Vec3f v = scene.cameras[cameraIndex].up;
+		Vec3f u = v.cross(w);
+
+		w = w.normalize();
+		v = v.normalize();
+		u = u.normalize();
+
+		float distance = scene.cameras[cameraIndex].near_distance;
+
+		float b = scene.cameras[cameraIndex].near_plane.z; 
+		float l = scene.cameras[cameraIndex].near_plane.x;
+		float t = scene.cameras[cameraIndex].near_plane.w;
+		float r = scene.cameras[cameraIndex].near_plane.y;
+
+		Vec3f s;
+		float su, sv;
+
+		Vec3f m = e + ((w*(-1))*distance);
+		Vec3f q = m + u * l + v * t;
+
+		
+
+		//float rlw = (r - l) / width;
+		//float tbh = (t - b) / height;
+
+		unsigned char* image = new unsigned char[width * height * 3];
+
+		int index = 0;
+
+		for (int j = 0; j < height; ++j)
+		{
+			for (int i = 0; i < width; ++i)
+			{
+				//compute s
+				su = ((r - l) / width) * (i + 0.50);
+				sv = ((t - b) / height) * (j + 0.50);
+				s = q + u * su - v * sv;
+
+				Vec3f se = (s - e).normalize; //change name of se!!!
+				//se = se.normalize();
+
+				Ray ray(e, se);
+
+				float t;
+				Material material;
+				Vec3f un;
+
+				// give color value
+				if (scene.check_intersection(ray, t, material, un)) //change order of attritubes
+				{
+					Vec3i color = scene.calculate_color(ray, t, un, material, scene.max_recursion_depth);
+					image[index++] = color.x;//R
+					image[index++] = color.y;//G
+					image[index++] = color.z;//B
+				}
+				else
+				{
+					image[index++] = scene.background_color.x;//R
+					image[index++] = scene.background_color.y;//G
+					image[index++] = scene.background_color.z;//B
+				}
+			}
+		}
+		//*****************************************************************
     const RGB BAR_COLOR[8] =
     {
         { 255, 255, 255 },  // 100% White

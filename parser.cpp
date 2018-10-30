@@ -193,25 +193,83 @@ void parser::Scene::loadFromXml(const std::string& filepath)
         element = element->NextSiblingElement("Triangle");
     }
 
-    //Get Spheres
+    //Get sphereIndexeres
     element = root->FirstChildElement("Objects");
-    element = element->FirstChildElement("Sphere");
-    Sphere sphere;
+    element = element->FirstChildElement("sphereIndexere");
+    sphereIndexere sphereIndexere;
     while (element)
     {
         child = element->FirstChildElement("Material");
         stream << child->GetText() << std::endl;
-        stream >> sphere.material_id;
+        stream >> sphereIndexere.material_id;
 
         child = element->FirstChildElement("Center");
         stream << child->GetText() << std::endl;
-        stream >> sphere.center_vertex_id;
+        stream >> sphereIndexere.center_vertex_id;
 
         child = element->FirstChildElement("Radius");
         stream << child->GetText() << std::endl;
-        stream >> sphere.radius;
+        stream >> sphereIndexere.radius;
 
-        spheres.push_back(sphere);
-        element = element->NextSiblingElement("Sphere");
+        sphereIndexeres.push_back(sphereIndexere);
+        element = element->NextSiblingElement("sphereIndexere");
     }
 }
+bool parser::Scene::isIntersected(Ray ray, float& t, Material& imat, Vec3f& un)
+{
+	float tMin = numeric<float>::infinity();
+	for (int sphereIndexereIndex = 0; sphereIndex < sphereIndexeres_size; sphereIndex++) //soze from initScene
+	{
+		if (sphereIndexeres[sphereIndex].is_intersect(ray, t) && t<tmin)
+		{
+			tmin = t;
+			imat = sphereIndexeres[sphereIndex].mat;
+			//sphereIndexeres[sphereIndex].compute_normal(ray.origin+ray.direction*t);
+			un = sphereIndexeres[sphereIndex].unit_normal;
+		}
+	}
+
+	for (int tri = 0; tri < triangles_size; tri++)
+	{
+		if (triangles[tri].is_intersect(ray, t) && t<tmin)
+		{
+			tmin = t;
+			imat = triangles[tri].mat;
+			un = triangles[tri].unit_normal;
+		}
+	}
+
+	for (int msh = 0; msh < meshes_size; msh++)
+	{
+		for (int f = 0; f < meshes[msh].faces.size(); f++)
+		{
+			if (meshes[msh].mtriangles[f].is_intersect(ray, t) && t<tmin)
+			{
+				tmin = t;
+				imat = meshes[msh].mtriangles[f].mat;
+				un = meshes[msh].mtriangles[f].unit_normal;
+			}
+		}
+	}
+
+	for (int ins = 0; ins < meshInstance_size; ins++)
+	{
+		for (int f = 0; f < meshInstances[ins].baseMesh.faces.size(); f++)
+		{
+			if (meshInstances[ins].baseMesh.mtriangles[f].is_intersect(ray, t) && t<tmin)
+			{
+				tmin = t;
+				imat = meshInstances[ins].baseMesh.mtriangles[f].mat;
+				un = meshInstances[ins].baseMesh.mtriangles[f].unit_normal;
+			}
+		}
+	}
+
+	t = tmin;
+
+	if (tmin != numeric_limits<float>::infinity())
+		return true;
+	else
+		return false;
+}
+

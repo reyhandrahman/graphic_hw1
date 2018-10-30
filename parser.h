@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <limits>
 
 namespace parser
 {
@@ -92,7 +93,9 @@ namespace parser
 
         //Functions
         void loadFromXml(const std::string& filepath);
+		bool isIntersected(Ray ray, float& t, Material& imat, Vec3f& un);	
     };
+
 }
 
 #endif
