@@ -4,6 +4,9 @@
 #include <stdexcept>
 #include <iostream>
 
+using namespace std;
+using namespace parser;
+
 void parser::Scene::loadFromXml(const std::string& filepath)
 {
     tinyxml2::XMLDocument file;
@@ -193,7 +196,6 @@ void parser::Scene::loadFromXml(const std::string& filepath)
         element = element->NextSiblingElement("Triangle");
     }
 
-    //Get Spheres
     element = root->FirstChildElement("Objects");
     element = element->FirstChildElement("Sphere");
     Sphere sphere;
@@ -214,4 +216,110 @@ void parser::Scene::loadFromXml(const std::string& filepath)
         spheres.push_back(sphere);
         element = element->NextSiblingElement("Sphere");
     }
+
+    // //Get sphereIndexeres
+    // element = root->FirstChildElement("Objects");
+    // element = element->FirstChildElement("sphereIndexere");
+    // sphereIndexere sphereIndexere;
+    // while (element)
+    // {
+    //     child = element->FirstChildElement("Material");
+    //     stream << child->GetText() << std::endl;
+    //     stream >> sphereIndexere.material_id;
+
+    //     child = element->FirstChildElement("Center");
+    //     stream << child->GetText() << std::endl;
+    //     stream >> sphereIndexere.center_vertex_id;
+
+    //     child = element->FirstChildElement("Radius");
+    //     stream << child->GetText() << std::endl;
+    //     stream >> sphereIndexere.radius;
+
+    //     sphereIndexere.push_back(sphereIndexere);
+    //     element = element->NextSiblingElement("sphereIndexere");
+    // }
 }
+bool parser::Scene::isIntersected(Ray ray, float& t, Material& imat, Vec3f& un)
+{
+	float tMin = numeric_limits<float>::infinity();
+	int sphereNumber = spheres.size();
+	int triangleNumber = triangles.size();
+	int meshNumber = meshes.size();
+	int meshInstanceNumber = meshes.size();
+
+	for (int sphereIndex = 0; sphereIndex < sphereNumber; sphereIndex++) //soze from initScene
+	{
+		if (spheres[sphereIndex].is_intersect(ray, t) && t<tMin)
+		{
+			tMin = t;
+			imat = spheres[sphereIndex].mat;
+			//sphereIndexeres[sphereIndex].compute_normal(ray.origin+ray.direction*t);
+			un = spheres[sphereIndex].unit_normal;
+		}
+	}
+
+	for (int triangleIndex = 0; triangleIndex < triangleNumber; triangleIndex++)
+	{
+		if (triangles[triangleIndex].is_intersect(ray, t) && t<tMin)
+		{
+			tMin = t;
+			imat = triangles[triangleIndex].mat;
+			un = triangles[triangleIndex].unit_normal;
+		}
+	}
+
+	for (int meshIndex = 0; meshIndex < meshNumber; meshIndex++)
+	{
+		for (int f = 0; f < meshes[meshIndex].faces.size(); f++)
+		{
+			if (meshes[meshIndex].mtriangles[f].is_intersect(ray, t) && t<tMin)
+			{
+				tMin = t;
+				imat = meshes[meshIndex].mtriangles[f].mat;
+				un = meshes[meshIndex].mtriangles[f].unit_normal;
+			}
+		}
+	}
+
+	// for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceNumber; meshInstanceIndex++)
+	// {
+	// 	for (int f = 0; f < meshInstances[meshInstanceIndex].baseMesh.faces.size(); f++)
+	// 	{
+	// 		if (meshInstances[meshInstanceIndex].baseMesh.mtriangles[f].is_intersect(ray, t) && t<tMin)
+	// 		{
+	// 			tMin = t;
+	// 			imat = meshInstances[meshInstanceIndex].baseMesh.mtriangles[f].mat;
+	// 			un = meshInstances[meshInstanceIndex].baseMesh.mtriangles[f].unit_normal;
+	// 		}
+	// 	}
+	// }
+
+	t = tMin;
+
+	if (tMin != numeric_limits<float>::infinity())
+		return true;
+	else
+		return false;
+}
+
+
+float clamping(float intensityValue)
+{
+    if (intensityValue > 255.0)
+        return 255.0;
+    else
+        return intensityValue;
+}
+
+
+ //IF USING THESE HERE,ADD THEIR DECLARATION IN PARSER HEADER FILE!!!
+Vec3i parser::Scene::computeAmbientLight(Ray ray, float& t, Material& material, Vec3f& un, int& count)
+{
+	Vec3f colorAmbient;
+	colorAmbient.x = (int)clamping(ambient_light.x * material.ambient.x);
+	colorAmbient.y = (int)clamping(ambient_light.y * material.ambient.y);
+	colorAmbient.z = (int)clamping(ambient_light.z * material.ambient.z);
+
+}
+
+//*****************************CALCULATE RAY-TRIANGLE INTERSECTION AND RAY-SPHERE INTERSECTION***********************************************////////////USE BLITZ LIBRARY FOR MATRICE OPERATIONS
