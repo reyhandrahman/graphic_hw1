@@ -22,6 +22,7 @@ int main(int argc, char* argv[])
 	//**************************************************
 
 	scene.init();
+	//for each camera
 	
 	for (int cameraIndex = 0; cameraIndex < scene.cameras.size(); cameraIndex++)
 	{
@@ -59,8 +60,6 @@ int main(int argc, char* argv[])
 
 		int index = 0;
 
-
-		//int width = 640, height = 480;
 		//for each pixel
 		for (int j = 0; j < imageHeight; ++j)
 		{
@@ -72,18 +71,16 @@ int main(int argc, char* argv[])
 				s = q + (u * su) - (v * sv);
 
 				Vec3f rayDirection = (s - e).normalize(); 
-				//se = se.normalize();
-
-				Ray ray(e, rayDirection); //DEFINE WHAT'S A RAY
+				Ray ray(e, rayDirection); 
 
 				float t;
 				Material material;
 				Vec3f un;
 
-				// give color value
+				//check ray-sphere intersection or ray-triangle intersection
 				if (scene.isIntersected(ray, t, material, un)) 
 				{
-					//Vec3i color = scene.computeAmbientLight(ray, t, material, un, scene.max_recursion_depth); //calculate_color define
+					//Vec3i color = scene.computeAmbientLight(ray, t, material, un, scene.max_recursion_depth);
 					Vec3i color    = scene.calculate_color(ray, t, un, material, scene.max_recursion_depth);
 					image[index++] = color.x;
 					image[index++] = color.y;
