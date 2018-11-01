@@ -20,6 +20,8 @@ int main(int argc, char* argv[])
     // ppm_write function.
 
 	//**************************************************
+
+	scene.init();
 	
 	for (int cameraIndex = 0; cameraIndex < scene.cameras.size(); cameraIndex++)
 	{
@@ -58,11 +60,11 @@ int main(int argc, char* argv[])
 		int index = 0;
 
 
-		int width = 640, height = 480;
+		//int width = 640, height = 480;
 		//for each pixel
-		for (int j = 0; j < height; ++j)
+		for (int j = 0; j < imageHeight; ++j)
 		{
-			for (int i = 0; i < width; ++i)
+			for (int i = 0; i < imageWidth; ++i)
 			{
 				//compute s
 				su = rightToLeftUnit * (i + 0.50);
@@ -81,7 +83,8 @@ int main(int argc, char* argv[])
 				// give color value
 				if (scene.isIntersected(ray, t, material, un)) 
 				{
-					Vec3i color = scene.computeAmbientLight(ray, t, material, un, scene.max_recursion_depth); //calculate_color define
+					//Vec3i color = scene.computeAmbientLight(ray, t, material, un, scene.max_recursion_depth); //calculate_color define
+					Vec3i color    = scene.calculate_color(ray, t, un, material, scene.max_recursion_depth);
 					image[index++] = color.x;
 					image[index++] = color.y;
 					image[index++] = color.z;
@@ -139,25 +142,7 @@ int main(int argc, char* argv[])
     // }
 
 	
-    	write_ppm(argv[2], image, width, height);
+    	write_ppm(argv[2], image, imageWidth, imageHeight);
     }
 
 }
-/* //PASS A SCENE AS AN ARGUMENT OR HAVE IT IN PARSER-time inefficient???
-Vec3i computeAmbientLight(Ray ray, float& t, Material& material, Vec3f& un)
-{
-	Vec3f colorAmbient;
-	colorAmbient.x = (int)ambient_light.x * material.ambient.x;
-	colorAmbient.y = (int)ambient_light.y * material.ambient.y;
-	colorAmbient.z = (int)ambient_light.z * material.ambient.z;
-
-}
-
-float clamping(float intensityValue)
-{
-	if (intensityValue > 255.0)
-		return 255.0;
-	else
-		return intensityValue;
-}
-*/

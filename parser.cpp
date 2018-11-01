@@ -1,3 +1,4 @@
+//KITAA
 #include "parser.h"
 #include "tinyxml2.h"
 #include <sstream>
@@ -217,28 +218,64 @@ void parser::Scene::loadFromXml(const std::string& filepath)
         element = element->NextSiblingElement("Sphere");
     }
 
-    // //Get sphereIndexeres
-    // element = root->FirstChildElement("Objects");
-    // element = element->FirstChildElement("sphereIndexere");
-    // sphereIndexere sphereIndexere;
-    // while (element)
-    // {
-    //     child = element->FirstChildElement("Material");
-    //     stream << child->GetText() << std::endl;
-    //     stream >> sphereIndexere.material_id;
 
-    //     child = element->FirstChildElement("Center");
-    //     stream << child->GetText() << std::endl;
-    //     stream >> sphereIndexere.center_vertex_id;
-
-    //     child = element->FirstChildElement("Radius");
-    //     stream << child->GetText() << std::endl;
-    //     stream >> sphereIndexere.radius;
-
-    //     sphereIndexere.push_back(sphereIndexere);
-    //     element = element->NextSiblingElement("sphereIndexere");
-    // }
 }
+
+void parser::Scene::init()
+{
+
+    point_lights_size = point_lights.size();
+
+    // init spheres
+    spheres_size = spheres.size() ; 
+    for(int sph=0 ; sph < spheres_size ; sph++)
+    {
+        //spheres[sph].compute_transform(scalingMatrices, translationMatrices, rotationMatrices);
+        spheres[sph].center = vertex_data[spheres[sph].center_vertex_id-1];
+        spheres[sph].mat = materials[spheres[sph].material_id-1] ;
+    }
+
+    // init triangles
+    triangles_size = triangles.size() ;
+    for(int tri=0 ; tri < triangles_size; tri++)
+    {               
+        triangles[tri].vertex0 = vertex_data[triangles[tri].indices.v0_id-1];
+        triangles[tri].vertex1 = vertex_data[triangles[tri].indices.v1_id-1];
+        triangles[tri].vertex2 = vertex_data[triangles[tri].indices.v2_id-1];
+        triangles[tri].compute_normal();
+        //triangles[tri].transform_triangle(scalingMatrices, translationMatrices, rotationMatrices); //hw2
+
+        triangles[tri].mat = materials[triangles[tri].material_id-1];
+    }
+
+    // init meshes
+    meshes_size = meshes.size() ;
+    for(int msh=0; msh < meshes_size; msh++)
+    {
+        Material msh_mat =  materials[meshes[msh].material_id-1];
+
+        for(int f=0; f < meshes[msh].faces.size(); f++)
+        {
+            Triangle tri(meshes[msh].material_id, meshes[msh].faces[f]);
+
+            tri.vertex0 = vertex_data[tri.indices.v0_id-1];
+            tri.vertex1 = vertex_data[tri.indices.v1_id-1];
+            tri.vertex2 = vertex_data[tri.indices.v2_id-1]; 
+            tri.compute_normal();
+            tri.mat = msh_mat;
+
+            meshes[msh].mtriangles.push_back(tri);  
+        }
+        //meshes[msh].transform_mesh(scalingMatrices, translationMatrices, rotationMatrices); //hw2
+
+     }
+
+   
+}   
+
+
+
+
 bool parser::Scene::isIntersected(Ray ray, float& t, Material& imat, Vec3f& un)
 {
 	float tMin = numeric_limits<float>::infinity();

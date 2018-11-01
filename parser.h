@@ -442,10 +442,116 @@ struct Triangle
         std::vector<Triangle> triangles;
         std::vector<Sphere> spheres;
 
+        //ADDITIONNAALLL-------------------------
+
+        int spheres_size;
+        int triangles_size;
+        int meshes_size;
+        int point_lights_size;
+        int meshInstance_size;
+
+
+        float clamp(float intensityValue)
+        {
+            if (intensityValue > 255.0)
+                return 255.0;
+            else
+                return intensityValue;
+        }
+
+
+
+        //ADDITIONALLLLLLLLL-----------------------------
+
         //Functions
+        void init();
+
         void loadFromXml(const std::string& filepath);
 		bool isIntersected(Ray ray, float& t, Material& imat, Vec3f& un);
 		Vec3i computeAmbientLight(Ray ray, float& t, Material& material, Vec3f& un, int& count);
+
+        Vec3i calculate_color(Ray ray, float t, Vec3f un, Material imat, int hit_count)
+        {
+            Vec3f color;
+            Vec3i icolor;
+            Vec3f Ld , Ls, Lm;
+
+            // ambient shading
+            color.x = ambient_light.x * imat.ambient.x ;//R
+            color.y = ambient_light.y * imat.ambient.y ;//G
+            color.z = ambient_light.z * imat.ambient.z ;//B
+
+            for(int l=0 ; l< point_lights_size ; l++)
+            {
+                Vec3f p  = ray.origin + ray.direction*t; 
+                Vec3f wi = point_lights[l].position - p ;
+                float dist2 = wi.dot(wi); 
+                wi = wi.normalize();
+                        
+                Ray shadow_ray(p + wi*shadow_ray_epsilon , wi);
+                    
+                float shadow_t;
+                Material dmat;
+                Vec3f dun;
+                                
+                bool iflag = isIntersected(shadow_ray, shadow_t , dmat, dun) ;
+                Vec3f lp = (p + wi*shadow_ray_epsilon + wi*shadow_t) - p;
+                        
+                 //for each obj check s intersects before p
+                 if( iflag && lp.dot(lp) < dist2)
+                    continue;
+         
+                // diffuse shading
+                float cos = std::max( 0.0f, wi.dot(un));
+                if(dist2>0)
+                {
+                    Ld.x = point_lights[l].intensity.x * imat.diffuse.x * cos;
+                    Ld.y = point_lights[l].intensity.y * imat.diffuse.y * cos;
+                    Ld.z = point_lights[l].intensity.z * imat.diffuse.z * cos;
+                }
+
+                // specular shading
+                Vec3f wo = (ray.origin -p).normalize();
+                Vec3f half = (wi + wo).normalize();
+
+                float cos2 =std::max( 0.0f, half.dot(un));
+                float k = std::pow(cos2, imat.phong_exponent);
+                
+                if(dist2>0)
+                {
+                    Ls.x = point_lights[l].intensity.x * imat.specular.x * k;
+                    Ls.y = point_lights[l].intensity.y * imat.specular.y * k;
+                    Ls.z = point_lights[l].intensity.z * imat.specular.z * k;
+                }
+                // reflectance
+                Vec3f wr = (wo*(-1) + un*(un.dot(wo))*2).normalize();
+                Ray ref_ray(p + wi*shadow_ray_epsilon, wr);
+
+                float ref_t;
+                Vec3f ref_un;
+                Material ref_imat;
+
+                if(hit_count && isIntersected(ref_ray, ref_t, ref_imat, ref_un))
+                {   
+                    Vec3i rcolor = calculate_color(ref_ray, ref_t, ref_un, ref_imat, hit_count-1) ;
+
+                    Lm.x = imat.mirror.x * rcolor.x;
+                    Lm.y = imat.mirror.y * rcolor.y;
+                    Lm.z = imat.mirror.z * rcolor.z;
+                }
+
+                color.x += (Ld.x + Ls.x) / dist2 + Lm.x ;//R
+                color.y += (Ld.y + Ls.y) / dist2 + Lm.y ;//G
+                color.z += (Ld.z + Ls.z) / dist2 + Lm.z ;//B
+                
+            }
+                
+            icolor.x = (int) clamp(color.x) ;//R
+            icolor.y = (int) clamp(color.y) ;//G
+            icolor.z = (int) clamp(color.z) ;//B
+            
+            return icolor;
+        }
 
     };
 
