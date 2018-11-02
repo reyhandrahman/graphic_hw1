@@ -20,7 +20,7 @@ namespace parser
         Vec3f() : x(0.0f), y(0.0f), z(0.0f) {}
         Vec3f(float X, float Y, float Z) : x(X), y(Y), z(Z) {}
 
-        //basic vector operations
+        //basic vector operations, made for ourself
         Vec3f operator + (Vec3f v2) {return Vec3f(x+v2.x, y+v2.y, z+v2.z); }
         Vec3f operator - (Vec3f v2) {return Vec3f(x-v2.x, y-v2.y, z-v2.z); }
         Vec3f operator * (float k) {return Vec3f(x*k, y*k, z*k); }
@@ -60,69 +60,271 @@ namespace parser
         void operator = (Ray r2) {origin=r2.origin; direction=r2.direction; }
     };
 
-    struct Matrix
-    {
-        float a11, a12, a13, a14;       //first row
-        float a21, a22, a23, a24;       //second row
-        float a31, a32, a33, a34;       //third row
-        float a41, a42, a43, a44;       //fourth row
+    // struct Matrix
+    // {
+    //     float a11, a12, a13, a14;       //first row
+    //     float a21, a22, a23, a24;       //second row
+    //     float a31, a32, a33, a34;       //third row
+    //     float a41, a42, a43, a44;       //fourth row
 
+    //     Matrix()
+    //     {
+    //         a11=0; a12=0; a13=0; a14=0;     //first row
+    //         a21=0; a22=0; a23=0; a24=0;     //second row
+    //         a31=0; a32=0; a33=0; a34=0;     //third row
+    //         a41=0; a42=0; a43=0; a44=0;
+    //     }
+
+    //     Matrix( float c11, float c12, float c13, float c14,
+    //             float c21, float c22, float c23, float c24,
+    //             float c31, float c32, float c33, float c34,
+    //             float c41, float c42, float c43, float c44) 
+    //     {
+    //         a11=c11; a12=c12; a13=c13; a14=c14;     //first row
+    //         a21=c21; a22=c22; a23=c23; a24=c24;     //second row
+    //         a31=c31; a32=c32; a33=c33; a34=c34;     //third row
+    //         a41=c41; a42=c42; a43=c43; a44=c44;
+    //     }
+    
+    
+    //     Matrix operator * (Matrix m2) 
+    //     {
+    //         float c11, c12, c13, c14;
+    //         float c21, c22, c23, c24;
+    //         float c31, c32, c33, c34;
+    //         float c41, c42, c43, c44;
+
+    //         c11 = a11*m2.a11 + a12*m2.a21 + a13*m2.a31 + a14*m2.a41;
+    //         c12 = a11*m2.a12 + a12*m2.a22 + a13*m2.a32 + a14*m2.a42;
+    //         c13 = a11*m2.a13 + a12*m2.a23 + a13*m2.a33 + a14*m2.a43;
+    //         c14 = a11*m2.a14 + a12*m2.a24 + a13*m2.a34 + a14*m2.a44;
+
+    //         c21 = a21*m2.a11 + a22*m2.a21 + a23*m2.a31 + a24*m2.a41;
+    //         c22 = a21*m2.a12 + a22*m2.a22 + a23*m2.a32 + a24*m2.a42;
+    //         c23 = a21*m2.a13 + a22*m2.a23 + a23*m2.a33 + a24*m2.a43;
+    //         c24 = a21*m2.a14 + a22*m2.a24 + a23*m2.a34 + a24*m2.a44;
+
+    //         c31 = a31*m2.a11 + a32*m2.a21 + a33*m2.a31 + a34*m2.a41;
+    //         c32 = a31*m2.a12 + a32*m2.a22 + a33*m2.a32 + a34*m2.a42;
+    //         c33 = a31*m2.a13 + a32*m2.a23 + a33*m2.a33 + a34*m2.a43;
+    //         c34 = a31*m2.a14 + a32*m2.a24 + a33*m2.a34 + a34*m2.a44;
+
+    //         c41 = a41*m2.a11 + a42*m2.a21 + a43*m2.a31 + a44*m2.a41;
+    //         c42 = a41*m2.a12 + a42*m2.a22 + a43*m2.a32 + a44*m2.a42;
+    //         c43 = a41*m2.a13 + a42*m2.a23 + a43*m2.a33 + a44*m2.a43;
+    //         c44 = a41*m2.a14 + a42*m2.a24 + a43*m2.a34 + a44*m2.a44;
+        
+    //         return Matrix(c11,c12,c13,c14,c21,c22,c23,c24,c31,c32,c33,c34,c41,c42,c43,c44); }
+
+    //     Vec3f operator * (Vec3f v) 
+    //     {
+    //         float rx, ry, rz;
+
+    //         rx = a11*v.x + a12*v.y + a13*v.z + a14;
+    //         ry = a21*v.x + a22*v.y + a23*v.z + a24;
+    //         rz = a31*v.x + a32*v.y + a33*v.z + a34;
+        
+    //         return Vec3f(rx, ry, rz);
+    //     }
+
+    //     Vec3f vecMultip(Vec3f v)
+    //     {
+    //         float rx, ry, rz;
+
+    //         rx = a11*v.x + a12*v.y + a13*v.z ;
+    //         ry = a21*v.x + a22*v.y + a23*v.z ;
+    //         rz = a31*v.x + a32*v.y + a33*v.z ;
+        
+    //         return Vec3f(rx, ry, rz);
+    //     }
+    
+    //     float determinant()
+    //     {
+    //         float d = a11*a22*a33*a44 + a11*a23*a34*a42 + a11*a24*a32*a43 
+    //                 + a12*a21*a34*a43 + a12*a23*a31*a44 + a12*a24*a33*a41 
+    //                 + a13*a21*a32*a44 + a13*a22*a34*a41 + a13*a24*a31*a42
+    //                 + a14*a21*a33*a42 + a14*a22*a31*a43 + a14*a23*a32*a41
+    //                 - a11*a22*a34*a43 - a11*a23*a32*a44 - a11*a24*a33*a42
+    //                 - a12*a21*a33*a44 - a12*a23*a34*a41 - a12*a24*a31*a43
+    //                 - a13*a21*a34*a42 - a13*a22*a31*a44 - a13*a24*a32*a41
+    //                 - a14*a21*a32*a43 - a14*a22*a33*a41 - a14*a23*a31*a42;
+
+    //         return d;
+    //     }
+
+    //     Matrix inverse()
+    //     {
+    //         float c11, c12, c13, c14;
+    //         float c21, c22, c23, c24;
+    //         float c31, c32, c33, c34;
+    //         float c41, c42, c43, c44;
+
+    //         c11 = a22*a33*a44 + a23*a34*a42 + a24*a32*a43 - a22*a34*a43 - a23*a32*a44 - a24*a33*a42; 
+    //         c12 = a12*a34*a43 + a13*a32*a44 + a14*a33*a42 - a12*a33*a44 - a13*a34*a42 - a14*a32*a43;
+    //         c13 = a12*a23*a44 + a13*a24*a42 + a14*a22*a43 - a12*a24*a43 - a13*a22*a44 - a14*a23*a42;
+    //         c14 = a12*a24*a33 + a13*a22*a34 + a14*a23*a32 - a12*a23*a34 - a13*a24*a32 - a14*a22*a33;
+
+    //         c21 = a21*a34*a43 + a23*a31*a44 + a24*a33*a41 - a21*a33*a44 - a23*a34*a41 - a24*a31*a43;
+    //         c22 = a11*a33*a44 + a13*a34*a41 + a14*a31*a43 - a11*a34*a43 - a13*a31*a44 - a14*a33*a41;
+    //         c23 = a11*a24*a43 + a13*a21*a44 + a14*a23*a41 - a11*a23*a44 - a13*a24*a41 - a14*a21*a43;
+    //         c24 = a11*a23*a34 + a13*a24*a31 + a14*a21*a33 - a11*a24*a33 - a13*a21*a34 - a14*a23*a31;
+
+    //         c31 = a21*a32*a44 + a22*a34*a41 + a24*a31*a42 - a21*a34*a42 - a22*a31*a44 - a24*a32*a41;
+    //         c32 = a11*a34*a42 + a12*a31*a44 + a14*a32*a41 - a11*a32*a44 - a12*a34*a41 - a14*a31*a42;
+    //         c33 = a11*a22*a44 + a12*a24*a41 + a14*a21*a42 - a11*a24*a42 - a12*a21*a44 - a14*a22*a41;
+    //         c34 = a11*a24*a32 + a12*a21*a34 + a14*a22*a31 - a11*a22*a34 - a12*a24*a31 - a14*a21*a32;
+
+    //         c41 = a21*a33*a42 + a22*a31*a43 + a23*a32*a41 - a21*a32*a43 - a22*a33*a41 - a23*a31*a42;
+    //         c42 = a11*a32*a43 + a12*a33*a41 + a13*a31*a42 - a11*a33*a42 - a12*a31*a43 - a13*a32*a41;
+    //         c43 = a11*a23*a42 + a12*a21*a43 + a13*a22*a41 - a11*a22*a43 - a12*a23*a41 - a13*a21*a42;
+    //         c44 = a11*a22*a33 + a12*a23*a31 + a13*a21*a32 - a11*a23*a32 - a12*a21*a33 - a13*a22*a31;
+
+    //         float d = this->determinant();
+        
+    //         d = 1/d;
+        
+    //         c11 *= d; c12 *= d; c13 *= d; c14 *= d;
+    //         c21 *= d; c22 *= d; c23 *= d; c24 *= d;
+    //         c31 *= d; c32 *= d; c33 *= d; c34 *= d;
+    //         c41 *= d; c42 *= d; c43 *= d; c44 *= d;
+
+    //         return Matrix(c11,c12,c13,c14,c21,c22,c23,c24,c31,c32,c33,c34,c41,c42,c43,c44);
+    //     }
+
+    //     void operator = (Matrix m2)
+    //     {
+
+    //         a11 = m2.a11; a12 = m2.a12; a13=m2.a13; a14=m2.a14;
+    //         a21 = m2.a21; a22 = m2.a22; a23=m2.a23; a24=m2.a24;
+    //         a31 = m2.a31; a32 = m2.a32; a33=m2.a33; a34=m2.a34;
+    //         a41 = m2.a41; a42 = m2.a42; a43=m2.a43; a44=m2.a44;
+    //     }
+
+    //     Matrix transpose()
+    //     {
+    //         return Matrix(a11,a21,a31,a41,
+    //                       a12,a22,a32,a42,
+    //                       a13,a23,a33,a43,
+    //                       a14,a24,a34,a44);
+    //     }
+
+
+    //     Ray operator * (Ray r)
+    //     {
+    //         Vec3f o, d;
+
+    //         o.x = a11*r.origin.x + a12*r.origin.y + a13*r.origin.z + a14;
+    //         o.y = a21*r.origin.x + a22*r.origin.y + a23*r.origin.z + a24;
+    //         o.z = a31*r.origin.x + a32*r.origin.y + a33*r.origin.z + a34;
+
+    //         d.x = a11*r.direction.x + a12*r.direction.y + a13*r.direction.z;
+    //         d.y = a21*r.direction.x + a22*r.direction.y + a23*r.direction.z;
+    //         d.z = a31*r.direction.x + a32*r.direction.y + a33*r.direction.z;
+           
+    //         return Ray(o, d);
+    //     }
+
+    //     void print()
+    //     {
+    //         std::cout << a11 << " " << a12 << " " << a13 << " " << a14 << std::endl;
+    //         std::cout << a21 << " " << a22 << " " << a23 << " " << a24 << std::endl;
+    //         std::cout << a31 << " " << a32 << " " << a33 << " " << a34 << std::endl;
+    //         std::cout << a41 << " " << a42 << " " << a43 << " " << a44 << std::endl;
+    //         std::cout << std::endl;
+    //     }
+
+    // };
+
+     struct Matrix
+    {
+        float intersectionArray[4][4];
+        
         Matrix()
         {
-            a11=0; a12=0; a13=0; a14=0;     //first row
-            a21=0; a22=0; a23=0; a24=0;     //second row
-            a31=0; a32=0; a33=0; a34=0;     //third row
-            a41=0; a42=0; a43=0; a44=0;
+            for (int i = 0; i < 4; ++i)
+            {
+                for (int j = 0; j < 4; ++j)
+                {
+                    intersectionArray[i][j]=0;
+                }
+            }
+        }
+           
+            Matrix(float a11,float a12,float a13, float a14,       
+            float a21,float a22,float a23, float a24,       
+            float a31, float a32, float a33,float a34,       
+            float a41, float a42,float a43, float a44)
+            {
+               intersectionArray[0][0]=a11;
+               intersectionArray[0][1]=a12;
+               intersectionArray[0][2]=a13;
+               intersectionArray[0][3]=a14;
+               intersectionArray[1][0]=a21;
+               intersectionArray[1][1]=a22;
+               intersectionArray[1][2]=a23;
+               intersectionArray[1][3]=a24;
+               intersectionArray[2][0]=a31;
+               intersectionArray[2][1]=a32;
+               intersectionArray[2][2]=a33;
+               intersectionArray[2][3]=a34;
+               intersectionArray[3][0]=a41;
+               intersectionArray[3][1]=a42;
+               intersectionArray[3][2]=a43;
+               intersectionArray[3][3]=a44;
+            }
+
+          Ray operator * (Ray r)
+        {
+            Vec3f o, d;
+
+            o.x = intersectionArray[0][0]*r.origin.x + intersectionArray[0][1]*r.origin.y + intersectionArray[0][2]*r.origin.z + intersectionArray[0][3];
+            o.y = intersectionArray[1][0]*r.origin.x + intersectionArray[1][1]*r.origin.y + intersectionArray[1][2]*r.origin.z + intersectionArray[1][3];
+            o.z = intersectionArray[2][0]*r.origin.x + intersectionArray[2][1]*r.origin.y + intersectionArray[2][2]*r.origin.z + intersectionArray[2][3];
+
+            d.x = intersectionArray[0][0]*r.direction.x + intersectionArray[0][1]*r.direction.y + intersectionArray[0][2]*r.direction.z;
+            d.y = intersectionArray[1][0]*r.direction.x + intersectionArray[1][1]*r.direction.y + intersectionArray[1][2]*r.direction.z;
+            d.z = intersectionArray[2][0]*r.direction.x + intersectionArray[2][1]*r.direction.y + intersectionArray[2][2]*r.direction.z;
+           
+            return Ray(o, d);
         }
 
-        Matrix( float c11, float c12, float c13, float c14,
-                float c21, float c22, float c23, float c24,
-                float c31, float c32, float c33, float c34,
-                float c41, float c42, float c43, float c44) 
+
+         Matrix operator * (Matrix m2) 
         {
-            a11=c11; a12=c12; a13=c13; a14=c14;     //first row
-            a21=c21; a22=c22; a23=c23; a24=c24;     //second row
-            a31=c31; a32=c32; a33=c33; a34=c34;     //third row
-            a41=c41; a42=c42; a43=c43; a44=c44;
+            
+            Matrix result;
+          
+            result.intersectionArray[0][0] = intersectionArray[0][0]*m2.intersectionArray[0][0] + intersectionArray[0][1]*m2.intersectionArray[1][0] + intersectionArray[0][2]*m2.intersectionArray[2][0] + intersectionArray[0][3]*m2.intersectionArray[3][0];
+            result.intersectionArray[0][1] = intersectionArray[0][0]*m2.intersectionArray[0][1] + intersectionArray[0][1]*m2.intersectionArray[1][1] + intersectionArray[0][2]*m2.intersectionArray[2][1] + intersectionArray[0][3]*m2.intersectionArray[3][1];
+            result.intersectionArray[0][2]= intersectionArray[0][0]*m2.intersectionArray[0][2] + intersectionArray[0][1]*m2.intersectionArray[1][2] + intersectionArray[0][2]*m2.intersectionArray[2][2] + intersectionArray[0][3]*m2.intersectionArray[3][2];
+            result.intersectionArray[0][3]= intersectionArray[0][0]*m2.intersectionArray[0][3] + intersectionArray[0][1]*m2.intersectionArray[1][3] + intersectionArray[0][2]*m2.intersectionArray[2][3] + intersectionArray[0][3]*m2.intersectionArray[3][3];
+
+            result.intersectionArray[1][0] = intersectionArray[1][0]*m2.intersectionArray[0][0] + intersectionArray[1][1]*m2.intersectionArray[1][0] + intersectionArray[1][2]*m2.intersectionArray[2][0] + intersectionArray[1][3]*m2.intersectionArray[3][0];
+            result.intersectionArray[1][1] = intersectionArray[1][0]*m2.intersectionArray[0][1] + intersectionArray[1][1]*m2.intersectionArray[1][1] + intersectionArray[1][2]*m2.intersectionArray[2][1] + intersectionArray[1][3]*m2.intersectionArray[3][1];
+            result.intersectionArray[1][2]= intersectionArray[1][0]*m2.intersectionArray[0][2] + intersectionArray[1][1]*m2.intersectionArray[1][2] + intersectionArray[1][2]*m2.intersectionArray[2][2] + intersectionArray[1][3]*m2.intersectionArray[3][2];
+            result.intersectionArray[1][3]= intersectionArray[1][0]*m2.intersectionArray[0][3] + intersectionArray[1][1]*m2.intersectionArray[1][3] + intersectionArray[1][2]*m2.intersectionArray[2][3] + intersectionArray[1][3]*m2.intersectionArray[3][3];
+
+            result.intersectionArray[2][0] = intersectionArray[2][0]*m2.intersectionArray[0][0] + intersectionArray[2][1]*m2.intersectionArray[1][0] + intersectionArray[2][2]*m2.intersectionArray[2][0] + intersectionArray[2][3]*m2.intersectionArray[3][0];
+            result.intersectionArray[2][1] = intersectionArray[2][0]*m2.intersectionArray[0][1] + intersectionArray[2][1]*m2.intersectionArray[1][1] + intersectionArray[2][2]*m2.intersectionArray[2][1] + intersectionArray[2][3]*m2.intersectionArray[3][1];
+            result.intersectionArray[2][2]= intersectionArray[2][0]*m2.intersectionArray[0][2] + intersectionArray[2][1]*m2.intersectionArray[1][2] + intersectionArray[2][2]*m2.intersectionArray[2][2] + intersectionArray[2][3]*m2.intersectionArray[3][2];
+            result.intersectionArray[2][3]= intersectionArray[2][0]*m2.intersectionArray[0][3] + intersectionArray[2][1]*m2.intersectionArray[1][3] + intersectionArray[2][2]*m2.intersectionArray[2][3] + intersectionArray[2][3]*m2.intersectionArray[3][3];
+
+            result.intersectionArray[3][0] = intersectionArray[3][0]*m2.intersectionArray[0][0] + intersectionArray[3][1]*m2.intersectionArray[1][0] + intersectionArray[3][2]*m2.intersectionArray[2][0] + intersectionArray[3][3]*m2.intersectionArray[3][0];
+            result.intersectionArray[3][1] = intersectionArray[3][0]*m2.intersectionArray[0][1] + intersectionArray[3][1]*m2.intersectionArray[1][1] + intersectionArray[3][2]*m2.intersectionArray[2][1] + intersectionArray[3][3]*m2.intersectionArray[3][1];
+            result.intersectionArray[3][2]= intersectionArray[3][0]*m2.intersectionArray[0][2] + intersectionArray[3][1]*m2.intersectionArray[1][2] + intersectionArray[3][2]*m2.intersectionArray[2][2] + intersectionArray[3][3]*m2.intersectionArray[3][2];
+            result.intersectionArray[3][3]= intersectionArray[3][0]*m2.intersectionArray[0][3] + intersectionArray[3][1]*m2.intersectionArray[1][3] + intersectionArray[3][2]*m2.intersectionArray[2][3] + intersectionArray[3][3]*m2.intersectionArray[3][3];
+
+            return result;
         }
-    
-    
-        Matrix operator * (Matrix m2) 
-        {
-            float c11, c12, c13, c14;
-            float c21, c22, c23, c24;
-            float c31, c32, c33, c34;
-            float c41, c42, c43, c44;
-
-            c11 = a11*m2.a11 + a12*m2.a21 + a13*m2.a31 + a14*m2.a41;
-            c12 = a11*m2.a12 + a12*m2.a22 + a13*m2.a32 + a14*m2.a42;
-            c13 = a11*m2.a13 + a12*m2.a23 + a13*m2.a33 + a14*m2.a43;
-            c14 = a11*m2.a14 + a12*m2.a24 + a13*m2.a34 + a14*m2.a44;
-
-            c21 = a21*m2.a11 + a22*m2.a21 + a23*m2.a31 + a24*m2.a41;
-            c22 = a21*m2.a12 + a22*m2.a22 + a23*m2.a32 + a24*m2.a42;
-            c23 = a21*m2.a13 + a22*m2.a23 + a23*m2.a33 + a24*m2.a43;
-            c24 = a21*m2.a14 + a22*m2.a24 + a23*m2.a34 + a24*m2.a44;
-
-            c31 = a31*m2.a11 + a32*m2.a21 + a33*m2.a31 + a34*m2.a41;
-            c32 = a31*m2.a12 + a32*m2.a22 + a33*m2.a32 + a34*m2.a42;
-            c33 = a31*m2.a13 + a32*m2.a23 + a33*m2.a33 + a34*m2.a43;
-            c34 = a31*m2.a14 + a32*m2.a24 + a33*m2.a34 + a34*m2.a44;
-
-            c41 = a41*m2.a11 + a42*m2.a21 + a43*m2.a31 + a44*m2.a41;
-            c42 = a41*m2.a12 + a42*m2.a22 + a43*m2.a32 + a44*m2.a42;
-            c43 = a41*m2.a13 + a42*m2.a23 + a43*m2.a33 + a44*m2.a43;
-            c44 = a41*m2.a14 + a42*m2.a24 + a43*m2.a34 + a44*m2.a44;
         
-            return Matrix(c11,c12,c13,c14,c21,c22,c23,c24,c31,c32,c33,c34,c41,c42,c43,c44); }
 
         Vec3f operator * (Vec3f v) 
         {
             float rx, ry, rz;
 
-            rx = a11*v.x + a12*v.y + a13*v.z + a14;
-            ry = a21*v.x + a22*v.y + a23*v.z + a24;
-            rz = a31*v.x + a32*v.y + a33*v.z + a34;
+            rx = this->intersectionArray[0][0]*v.x + this->intersectionArray[0][1]*v.y + this->intersectionArray[0][2]*v.z + this->intersectionArray[0][3];
+            ry = this->intersectionArray[1][0]*v.x + this->intersectionArray[1][1]*v.y + this->intersectionArray[1][2]*v.z + this->intersectionArray[1][3];
+            rz = this->intersectionArray[2][0]*v.x + this->intersectionArray[2][1]*v.y + this->intersectionArray[2][2]*v.z + this->intersectionArray[2][3];
         
             return Vec3f(rx, ry, rz);
         }
@@ -131,108 +333,91 @@ namespace parser
         {
             float rx, ry, rz;
 
-            rx = a11*v.x + a12*v.y + a13*v.z ;
-            ry = a21*v.x + a22*v.y + a23*v.z ;
-            rz = a31*v.x + a32*v.y + a33*v.z ;
+           rx = this->intersectionArray[0][0]*v.x + this->intersectionArray[0][1]*v.y + this->intersectionArray[0][2]*v.z;
+            ry = this->intersectionArray[1][0]*v.x + this->intersectionArray[1][1]*v.y + this->intersectionArray[1][2]*v.z;
+            rz = this->intersectionArray[2][0]*v.x + this->intersectionArray[2][1]*v.y + this->intersectionArray[2][2]*v.z;
         
             return Vec3f(rx, ry, rz);
         }
-    
+            
+
         float determinant()
         {
-            float d = a11*a22*a33*a44 + a11*a23*a34*a42 + a11*a24*a32*a43 
-                    + a12*a21*a34*a43 + a12*a23*a31*a44 + a12*a24*a33*a41 
-                    + a13*a21*a32*a44 + a13*a22*a34*a41 + a13*a24*a31*a42
-                    + a14*a21*a33*a42 + a14*a22*a31*a43 + a14*a23*a32*a41
-                    - a11*a22*a34*a43 - a11*a23*a32*a44 - a11*a24*a33*a42
-                    - a12*a21*a33*a44 - a12*a23*a34*a41 - a12*a24*a31*a43
-                    - a13*a21*a34*a42 - a13*a22*a31*a44 - a13*a24*a32*a41
-                    - a14*a21*a32*a43 - a14*a22*a33*a41 - a14*a23*a31*a42;
-
-            return d;
+            float det = intersectionArray[0][0]*intersectionArray[1][1]*intersectionArray[2][2]*intersectionArray[3][3]+ intersectionArray[0][0]*intersectionArray[1][2]*intersectionArray[2][3]*intersectionArray[3][1]+intersectionArray[0][0]*intersectionArray[1][3]*intersectionArray[2][1]*intersectionArray[3][2]
+                    +intersectionArray[0][1]*intersectionArray[1][0]*intersectionArray[2][3]*intersectionArray[3][2]+ intersectionArray[0][1]*intersectionArray[1][2]*intersectionArray[2][0]*intersectionArray[3][3]+intersectionArray[0][1]*intersectionArray[1][3]*intersectionArray[2][2]*intersectionArray[3][0]
+                    +intersectionArray[0][2]*intersectionArray[1][0]*intersectionArray[2][1]*intersectionArray[3][3]+ intersectionArray[0][2]*intersectionArray[1][1]*intersectionArray[2][3]*intersectionArray[3][0]+intersectionArray[0][2]*intersectionArray[1][3]*intersectionArray[2][0]*intersectionArray[3][1]
+                    +intersectionArray[0][3]*intersectionArray[1][0]*intersectionArray[2][2]*intersectionArray[3][1]+ intersectionArray[0][3]*intersectionArray[1][1]*intersectionArray[2][0]*intersectionArray[3][2]+intersectionArray[0][3]*intersectionArray[1][2]*intersectionArray[2][1]*intersectionArray[3][0]
+                    -intersectionArray[0][0]*intersectionArray[1][1]*intersectionArray[2][3]*intersectionArray[3][2]- intersectionArray[0][0]*intersectionArray[1][2]*intersectionArray[2][1]*intersectionArray[3][3]-intersectionArray[0][0]*intersectionArray[1][3]*intersectionArray[2][2]*intersectionArray[3][1]                    
+                    -intersectionArray[0][1]*intersectionArray[1][0]*intersectionArray[2][2]*intersectionArray[3][3]- intersectionArray[0][1]*intersectionArray[1][2]*intersectionArray[2][3]*intersectionArray[3][0]-intersectionArray[0][1]*intersectionArray[1][3]*intersectionArray[2][0]*intersectionArray[3][2]
+                    -intersectionArray[0][2]*intersectionArray[1][0]*intersectionArray[2][3]*intersectionArray[3][1]- intersectionArray[0][2]*intersectionArray[1][1]*intersectionArray[2][0]*intersectionArray[3][3]-intersectionArray[0][2]*intersectionArray[1][3]*intersectionArray[2][1]*intersectionArray[3][0]
+                    -intersectionArray[0][3]*intersectionArray[1][0]*intersectionArray[2][1]*intersectionArray[3][2]- intersectionArray[0][3]*intersectionArray[1][1]*intersectionArray[2][2]*intersectionArray[3][0]-intersectionArray[0][3]*intersectionArray[1][2]*intersectionArray[2][0]*intersectionArray[3][1];
+            return det;
         }
 
         Matrix inverse()
         {
-            float c11, c12, c13, c14;
-            float c21, c22, c23, c24;
-            float c31, c32, c33, c34;
-            float c41, c42, c43, c44;
+            Matrix result;
+            result.intersectionArray[0][0] = intersectionArray[1][1]*intersectionArray[2][2]*intersectionArray[3][3]+intersectionArray[1][2]*intersectionArray[2][3]*intersectionArray[3][1]+intersectionArray[1][3]*intersectionArray[2][1]*intersectionArray[3][2]-intersectionArray[1][1]*intersectionArray[2][3]*intersectionArray[3][2]-intersectionArray[1][2]*intersectionArray[2][1]*intersectionArray[3][3]-intersectionArray[1][3]*intersectionArray[2][2]*intersectionArray[3][1];
+            result.intersectionArray[0][1] = intersectionArray[0][1]*intersectionArray[2][3]*intersectionArray[3][2]+intersectionArray[0][2]*intersectionArray[2][1]*intersectionArray[3][3]+intersectionArray[0][3]*intersectionArray[2][2]*intersectionArray[3][3]-intersectionArray[0][1]*intersectionArray[2][2]*intersectionArray[3][3]-intersectionArray[0][2]*intersectionArray[2][3]*intersectionArray[3][1]-intersectionArray[0][3]*intersectionArray[2][1]*intersectionArray[3][2];
+            result.intersectionArray[0][2]= intersectionArray[0][1]*intersectionArray[1][2]*intersectionArray[3][3]+intersectionArray[0][2]*intersectionArray[1][3]*intersectionArray[3][1]+intersectionArray[0][3]*intersectionArray[1][1]*intersectionArray[3][2]-intersectionArray[0][1]*intersectionArray[1][3]*intersectionArray[3][2]-intersectionArray[0][2]*intersectionArray[1][1]*intersectionArray[3][3]-intersectionArray[0][3]*intersectionArray[1][2]*intersectionArray[3][1];
+            result.intersectionArray[0][3]= intersectionArray[0][1]*intersectionArray[1][3]*intersectionArray[2][2]+intersectionArray[0][2]*intersectionArray[1][1]*intersectionArray[2][3]+intersectionArray[0][3]*intersectionArray[1][2]*intersectionArray[2][1]-intersectionArray[0][1]*intersectionArray[1][2]*intersectionArray[2][3]-intersectionArray[0][2]*intersectionArray[1][3]*intersectionArray[2][1]-intersectionArray[0][3]*intersectionArray[1][1]*intersectionArray[2][2];
 
-            c11 = a22*a33*a44 + a23*a34*a42 + a24*a32*a43 - a22*a34*a43 - a23*a32*a44 - a24*a33*a42; 
-            c12 = a12*a34*a43 + a13*a32*a44 + a14*a33*a42 - a12*a33*a44 - a13*a34*a42 - a14*a32*a43;
-            c13 = a12*a23*a44 + a13*a24*a42 + a14*a22*a43 - a12*a24*a43 - a13*a22*a44 - a14*a23*a42;
-            c14 = a12*a24*a33 + a13*a22*a34 + a14*a23*a32 - a12*a23*a34 - a13*a24*a32 - a14*a22*a33;
+            result.intersectionArray[1][0] = intersectionArray[1][0]*intersectionArray[2][3]*intersectionArray[3][2]+intersectionArray[1][2]*intersectionArray[2][0]*intersectionArray[3][3]+intersectionArray[1][3]*intersectionArray[2][2]*intersectionArray[3][0]-intersectionArray[1][0]*intersectionArray[2][2]*intersectionArray[3][3]-intersectionArray[1][2]*intersectionArray[2][3]*intersectionArray[3][0]-intersectionArray[1][3]*intersectionArray[2][0]*intersectionArray[3][2];
+            result.intersectionArray[1][1] = intersectionArray[0][0]*intersectionArray[2][2]*intersectionArray[3][3]+intersectionArray[0][2]*intersectionArray[2][3]*intersectionArray[3][0]+intersectionArray[0][3]*intersectionArray[2][0]*intersectionArray[3][2]-intersectionArray[0][0]*intersectionArray[2][3]*intersectionArray[3][2]-intersectionArray[0][2]*intersectionArray[2][0]*intersectionArray[3][3]-intersectionArray[0][3]*intersectionArray[2][2]*intersectionArray[3][0];
+            result.intersectionArray[1][2]= intersectionArray[0][0]*intersectionArray[1][2]*intersectionArray[3][2]+intersectionArray[0][2]*intersectionArray[1][0]*intersectionArray[3][3]+intersectionArray[0][3]*intersectionArray[1][2]*intersectionArray[3][0]-intersectionArray[0][0]*intersectionArray[1][2]*intersectionArray[3][3]-intersectionArray[0][2]*intersectionArray[1][3]*intersectionArray[3][0]-intersectionArray[0][3]*intersectionArray[1][0]*intersectionArray[3][2];
+            result.intersectionArray[1][3]= intersectionArray[0][0]*intersectionArray[1][2]*intersectionArray[2][3]+intersectionArray[0][2]*intersectionArray[1][3]*intersectionArray[2][0]+intersectionArray[0][3]*intersectionArray[1][0]*intersectionArray[2][2]-intersectionArray[0][0]*intersectionArray[1][3]*intersectionArray[2][2]-intersectionArray[0][2]*intersectionArray[1][0]*intersectionArray[3][3]-intersectionArray[0][3]*intersectionArray[1][2]*intersectionArray[2][0];
 
-            c21 = a21*a34*a43 + a23*a31*a44 + a24*a33*a41 - a21*a33*a44 - a23*a34*a41 - a24*a31*a43;
-            c22 = a11*a33*a44 + a13*a34*a41 + a14*a31*a43 - a11*a34*a43 - a13*a31*a44 - a14*a33*a41;
-            c23 = a11*a24*a43 + a13*a21*a44 + a14*a23*a41 - a11*a23*a44 - a13*a24*a41 - a14*a21*a43;
-            c24 = a11*a23*a34 + a13*a24*a31 + a14*a21*a33 - a11*a24*a33 - a13*a21*a34 - a14*a23*a31;
+            result.intersectionArray[2][0] = intersectionArray[1][0]*intersectionArray[2][1]*intersectionArray[3][3]+intersectionArray[1][1]*intersectionArray[2][3]*intersectionArray[3][0]+intersectionArray[1][3]*intersectionArray[2][0]*intersectionArray[3][1]-intersectionArray[1][0]*intersectionArray[2][3]*intersectionArray[3][1]-intersectionArray[1][1]*intersectionArray[2][0]*intersectionArray[3][3]-intersectionArray[1][3]*intersectionArray[2][1]*intersectionArray[3][0];
+            result.intersectionArray[2][1] = intersectionArray[0][0]*intersectionArray[2][3]*intersectionArray[3][1]+intersectionArray[0][1]*intersectionArray[2][0]*intersectionArray[3][3]+intersectionArray[0][3]*intersectionArray[2][1]*intersectionArray[3][3]-intersectionArray[0][0]*intersectionArray[2][1]*intersectionArray[3][3]-intersectionArray[0][1]*intersectionArray[2][3]*intersectionArray[3][0]-intersectionArray[0][3]*intersectionArray[2][0]*intersectionArray[3][1];
+            result.intersectionArray[2][2]= intersectionArray[0][0]*intersectionArray[1][1]*intersectionArray[3][3]+intersectionArray[0][1]*intersectionArray[1][3]*intersectionArray[3][0]+intersectionArray[0][3]*intersectionArray[1][0]*intersectionArray[3][1]-intersectionArray[0][0]*intersectionArray[1][3]*intersectionArray[3][1]-intersectionArray[0][1]*intersectionArray[1][0]*intersectionArray[3][3]-intersectionArray[0][3]*intersectionArray[1][1]*intersectionArray[3][0];
+            result.intersectionArray[2][3]= intersectionArray[0][0]*intersectionArray[1][3]*intersectionArray[2][1]+intersectionArray[0][1]*intersectionArray[1][0]*intersectionArray[2][3]+intersectionArray[0][3]*intersectionArray[1][1]*intersectionArray[2][3]-intersectionArray[0][0]*intersectionArray[1][1]*intersectionArray[2][3]-intersectionArray[0][1]*intersectionArray[1][3]*intersectionArray[2][0]-intersectionArray[0][3]*intersectionArray[1][0]*intersectionArray[2][1];
+            
+            result.intersectionArray[0][0] = intersectionArray[1][0]*intersectionArray[2][2]*intersectionArray[3][1]+intersectionArray[1][1]*intersectionArray[2][0]*intersectionArray[3][2]+intersectionArray[1][2]*intersectionArray[2][1]*intersectionArray[3][0]-intersectionArray[1][0]*intersectionArray[2][1]*intersectionArray[3][2]-intersectionArray[1][1]*intersectionArray[2][2]*intersectionArray[3][0]-intersectionArray[1][2]*intersectionArray[2][0]*intersectionArray[3][1];
+            result.intersectionArray[0][1] = intersectionArray[0][0]*intersectionArray[2][1]*intersectionArray[3][2]+intersectionArray[0][1]*intersectionArray[2][2]*intersectionArray[3][0]+intersectionArray[0][2]*intersectionArray[2][0]*intersectionArray[3][1]-intersectionArray[0][0]*intersectionArray[2][2]*intersectionArray[3][1]-intersectionArray[0][1]*intersectionArray[2][0]*intersectionArray[3][2]-intersectionArray[0][2]*intersectionArray[2][1]*intersectionArray[3][0];
+            result.intersectionArray[0][2]= intersectionArray[0][0]*intersectionArray[1][2]*intersectionArray[3][1]+intersectionArray[0][1]*intersectionArray[1][0]*intersectionArray[3][2]+intersectionArray[0][2]*intersectionArray[1][1]*intersectionArray[3][0]-intersectionArray[0][0]*intersectionArray[1][1]*intersectionArray[3][2]-intersectionArray[0][1]*intersectionArray[1][2]*intersectionArray[3][0]-intersectionArray[0][2]*intersectionArray[1][0]*intersectionArray[3][1];
+            result.intersectionArray[0][3]= intersectionArray[0][0]*intersectionArray[1][1]*intersectionArray[2][2]+intersectionArray[0][1]*intersectionArray[1][2]*intersectionArray[2][0]+intersectionArray[0][2]*intersectionArray[1][0]*intersectionArray[2][1]-intersectionArray[0][0]*intersectionArray[1][2]*intersectionArray[2][1]-intersectionArray[0][1]*intersectionArray[1][0]*intersectionArray[2][2]-intersectionArray[0][2]*intersectionArray[1][1]*intersectionArray[2][0];
+            //return result;
 
-            c31 = a21*a32*a44 + a22*a34*a41 + a24*a31*a42 - a21*a34*a42 - a22*a31*a44 - a24*a32*a41;
-            c32 = a11*a34*a42 + a12*a31*a44 + a14*a32*a41 - a11*a32*a44 - a12*a34*a41 - a14*a31*a42;
-            c33 = a11*a22*a44 + a12*a24*a41 + a14*a21*a42 - a11*a24*a42 - a12*a21*a44 - a14*a22*a41;
-            c34 = a11*a24*a32 + a12*a21*a34 + a14*a22*a31 - a11*a22*a34 - a12*a24*a31 - a14*a21*a32;
-
-            c41 = a21*a33*a42 + a22*a31*a43 + a23*a32*a41 - a21*a32*a43 - a22*a33*a41 - a23*a31*a42;
-            c42 = a11*a32*a43 + a12*a33*a41 + a13*a31*a42 - a11*a33*a42 - a12*a31*a43 - a13*a32*a41;
-            c43 = a11*a23*a42 + a12*a21*a43 + a13*a22*a41 - a11*a22*a43 - a12*a23*a41 - a13*a21*a42;
-            c44 = a11*a22*a33 + a12*a23*a31 + a13*a21*a32 - a11*a23*a32 - a12*a21*a33 - a13*a22*a31;
 
             float d = this->determinant();
         
             d = 1/d;
-        
-            c11 *= d; c12 *= d; c13 *= d; c14 *= d;
-            c21 *= d; c22 *= d; c23 *= d; c24 *= d;
-            c31 *= d; c32 *= d; c33 *= d; c34 *= d;
-            c41 *= d; c42 *= d; c43 *= d; c44 *= d;
-
-            return Matrix(c11,c12,c13,c14,c21,c22,c23,c24,c31,c32,c33,c34,c41,c42,c43,c44);
-        }
-
-        void operator = (Matrix m2)
-        {
-
-            a11 = m2.a11; a12 = m2.a12; a13=m2.a13; a14=m2.a14;
-            a21 = m2.a21; a22 = m2.a22; a23=m2.a23; a24=m2.a24;
-            a31 = m2.a31; a32 = m2.a32; a33=m2.a33; a34=m2.a34;
-            a41 = m2.a41; a42 = m2.a42; a43=m2.a43; a44=m2.a44;
-        }
-
-        Matrix transpose()
-        {
-            return Matrix(a11,a21,a31,a41,
-                          a12,a22,a32,a42,
-                          a13,a23,a33,a43,
-                          a14,a24,a34,a44);
-        }
-
-
-        Ray operator * (Ray r)
-        {
-            Vec3f o, d;
-
-            o.x = a11*r.origin.x + a12*r.origin.y + a13*r.origin.z + a14;
-            o.y = a21*r.origin.x + a22*r.origin.y + a23*r.origin.z + a24;
-            o.z = a31*r.origin.x + a32*r.origin.y + a33*r.origin.z + a34;
-
-            d.x = a11*r.direction.x + a12*r.direction.y + a13*r.direction.z;
-            d.y = a21*r.direction.x + a22*r.direction.y + a23*r.direction.z;
-            d.z = a31*r.direction.x + a32*r.direction.y + a33*r.direction.z;
+            for (int i = 0; i < 4; ++i)
+            {
+                for (int j = 0; j < 4; ++j)
+                {
+                    result.intersectionArray[i][j] *=d ;
+                }
+            }
            
-            return Ray(o, d);
+            return result;
         }
-
-        void print()
+       
+        
+        void operator = (Matrix copy)
         {
-            std::cout << a11 << " " << a12 << " " << a13 << " " << a14 << std::endl;
-            std::cout << a21 << " " << a22 << " " << a23 << " " << a24 << std::endl;
-            std::cout << a31 << " " << a32 << " " << a33 << " " << a34 << std::endl;
-            std::cout << a41 << " " << a42 << " " << a43 << " " << a44 << std::endl;
-            std::cout << std::endl;
+            for (int i = 0; i < 4; ++i)
+            {
+                for (int j = 0; j < 4; ++j)
+                {
+                    this->intersectionArray[i][j]=copy.intersectionArray[i][j];
+                }
+            }
+        }
+        
+
+         void print()
+        {   
+            for (int i = 0; i < 4; ++i)
+            {
+                for (int j = 0; j < 4; ++j)
+                {
+                     std::cout << intersectionArray[i][j]<< std::endl;
+                } 
+            }
         }
 
+     
     };
 
 
@@ -468,90 +653,7 @@ struct Triangle
 
         void loadFromXml(const std::string& filepath);
 		bool isIntersected(Ray ray, float& t, Material& imat, Vec3f& un);
-		Vec3i computeAmbientLight(Ray ray, float& t, Material& material, Vec3f& un, int& count);
-
-        Vec3i calculate_color(Ray ray, float t, Vec3f un, Material imat, int hit_count)
-        {
-            Vec3f color;
-            Vec3i icolor;
-            Vec3f Ld , Ls, Lm;
-
-            // ambient shading
-            color.x = ambient_light.x * imat.ambient.x ;//R
-            color.y = ambient_light.y * imat.ambient.y ;//G
-            color.z = ambient_light.z * imat.ambient.z ;//B
-
-            for(int l=0 ; l< point_lights_size ; l++)
-            {
-                Vec3f p  = ray.origin + ray.direction*t; 
-                Vec3f wi = point_lights[l].position - p ;
-                float dist2 = wi.dot(wi); 
-                wi = wi.normalize();
-                        
-                Ray shadow_ray(p + wi*shadow_ray_epsilon , wi);
-                    
-                float shadow_t;
-                Material dmat;
-                Vec3f dun;
-                                
-                bool iflag = isIntersected(shadow_ray, shadow_t , dmat, dun) ;
-                Vec3f lp = (p + wi*shadow_ray_epsilon + wi*shadow_t) - p;
-                        
-                 //for each obj check s intersects before p
-                 if( iflag && lp.dot(lp) < dist2)
-                    continue;
-         
-                // diffuse shading
-                float cos = std::max( 0.0f, wi.dot(un));
-                if(dist2>0)
-                {
-                    Ld.x = point_lights[l].intensity.x * imat.diffuse.x * cos;
-                    Ld.y = point_lights[l].intensity.y * imat.diffuse.y * cos;
-                    Ld.z = point_lights[l].intensity.z * imat.diffuse.z * cos;
-                }
-
-                // specular shading
-                Vec3f wo = (ray.origin -p).normalize();
-                Vec3f half = (wi + wo).normalize();
-
-                float cos2 =std::max( 0.0f, half.dot(un));
-                float k = std::pow(cos2, imat.phong_exponent);
-                
-                if(dist2>0)
-                {
-                    Ls.x = point_lights[l].intensity.x * imat.specular.x * k;
-                    Ls.y = point_lights[l].intensity.y * imat.specular.y * k;
-                    Ls.z = point_lights[l].intensity.z * imat.specular.z * k;
-                }
-                // reflectance
-                Vec3f wr = (wo*(-1) + un*(un.dot(wo))*2).normalize();
-                Ray ref_ray(p + wi*shadow_ray_epsilon, wr);
-
-                float ref_t;
-                Vec3f ref_un;
-                Material ref_imat;
-
-                if(hit_count && isIntersected(ref_ray, ref_t, ref_imat, ref_un))
-                {   
-                    Vec3i rcolor = calculate_color(ref_ray, ref_t, ref_un, ref_imat, hit_count-1) ;
-
-                    Lm.x = imat.mirror.x * rcolor.x;
-                    Lm.y = imat.mirror.y * rcolor.y;
-                    Lm.z = imat.mirror.z * rcolor.z;
-                }
-
-                color.x += (Ld.x + Ls.x) / dist2 + Lm.x ;//R
-                color.y += (Ld.y + Ls.y) / dist2 + Lm.y ;//G
-                color.z += (Ld.z + Ls.z) / dist2 + Lm.z ;//B
-                
-            }
-                
-            icolor.x = (int) clamp(color.x) ;//R
-            icolor.y = (int) clamp(color.y) ;//G
-            icolor.z = (int) clamp(color.z) ;//B
-            
-            return icolor;
-        }
+		Vec3i computeShadow(Ray ray, float t, Vec3f n, Material material,int maxRec);
 
     };
 

@@ -222,30 +222,31 @@ void parser::Scene::loadFromXml(const std::string& filepath)
 
 }
 
+//THE INIT---------------------------------------------------------------
 void parser::Scene::init()
 {
 
+    //just use the size
     point_lights_size = point_lights.size();
 
     // init spheres
     spheres_size = spheres.size() ; 
     for(int sph=0 ; sph < spheres_size ; sph++)
     {
-        //spheres[sph].compute_transform(scalingMatrices, translationMatrices, rotationMatrices);
         spheres[sph].center = vertex_data[spheres[sph].center_vertex_id-1];
         spheres[sph].mat = materials[spheres[sph].material_id-1] ;
     }
 
     // init triangles
     triangles_size = triangles.size() ;
+    
     for(int tri=0 ; tri < triangles_size; tri++)
     {               
         triangles[tri].vertex0 = vertex_data[triangles[tri].indices.v0_id-1];
         triangles[tri].vertex1 = vertex_data[triangles[tri].indices.v1_id-1];
         triangles[tri].vertex2 = vertex_data[triangles[tri].indices.v2_id-1];
         triangles[tri].compute_normal();
-        //triangles[tri].transform_triangle(scalingMatrices, translationMatrices, rotationMatrices); //hw2
-
+       
         triangles[tri].mat = materials[triangles[tri].material_id-1];
     }
 
@@ -337,12 +338,105 @@ float clamping(float intensityValue)
 
 
  //IF USING THESE HERE,ADD THEIR DECLARATION IN PARSER HEADER FILE!!!
-Vec3i parser::Scene::computeAmbientLight(Ray ray, float& t, Material& material, Vec3f& unitNormal, int& count)
+Vec3i parser::Scene::computeShadow(Ray ray, float t,  Vec3f n, Material material, int maxRec)
 {
-	Vec3f colorAmbient;
-	colorAmbient.x = (int)clamping(ambient_light.x * material.ambient.x);
-	colorAmbient.y = (int)clamping(ambient_light.y * material.ambient.y);
-	colorAmbient.z = (int)clamping(ambient_light.z * material.ambient.z);
+
+    Vec3i theColor;
+	Vec3f la, ld, ls, lm, lr;
+
+    //the ambient shading (the la)
+	la.x = ambient_light.x * material.ambient.x;
+	la.y = ambient_light.y * material.ambient.y;
+	la.z = ambient_light.z * material.ambient.z;
+
+    //------------------------------------------------------------
+    //for the diffuse shading (the ld)
+    for(int p=0; p<point_lights_size; p++)
+    {
+        //the ray vector
+        Vec3f r = ray.origin + ray.direction*t;
+        Vec3f wi = point_lights[p].position - r;
+        float wi_d = wi.dot(wi); //dot product, the real distance 
+        wi = wi.normalize(); //normalize it
+
+        //ga tahu ini untuk apa, mungkin in bisa nanti
+        Ray shadowRay(wi * shadow_ray_epsilon + r, wi);
+
+        //ngerti yay
+        float st;
+        Material theMat;
+        Vec3f theUn;
+
+        bool intersected = isIntersected(shadowRay, st, theMat, theUn);
+        lr = (r + wi*shadow_ray_epsilon + wi*st) - r;
+        
+        float lr_d = lr.dot(lr); //real distance
+
+        //if intersctd before the r 
+        if( intersected && lr_d < wi_d) 
+            continue;
+
+        float theCos = std::max(0.0f, wi.dot(n));
+        //not behind the plane
+        if(wi_d>0)
+        {
+            ld.x = point_lights[p].intensity.x * material.diffuse.x * theCos;
+            ld.y = point_lights[p].intensity.y * material.diffuse.y * theCos;
+            ld.z = point_lights[p].intensity.z * material.diffuse.z * theCos;
+        }
+
+        //-------------------------------------------------------------------
+        //specular shading
+        Vec3f wo = ray.origin - r;
+        wo = wo.normalize();
+
+        //the half vector
+        Vec3f h = (wi+wo).normalize();
+        float hn_d = h.dot(n);
+
+        float theCos_spec = std::max(0.0f, hn_d);
+        float thePhong = std::pow(theCos_spec, material.phong_exponent);
+        if(wi_d>0)
+        {
+            ls.x = point_lights[p].intensity.x * material.specular.x * thePhong;
+            ls.y = point_lights[p].intensity.y * material.specular.y * thePhong;
+            ls.z = point_lights[p].intensity.z * material.specular.z * thePhong;
+        }
+
+        //reflectance frormula
+        Vec3f wr = (wo*(-1) + n*(n.dot(wo))*2).normalize();
+
+        //reflectance rat
+        Ray reflectanceRay(wi * shadow_ray_epsilon + r, wr);
+
+        //new vars
+        Material refMat;
+        Vec3f refN;
+        float refT;
+
+        if(maxRec && isIntersected(reflectanceRay, refT, refMat, refN) )
+        {
+            
+            Vec3i rcolor = computeShadow(reflectanceRay, refT, refN, refMat, maxRec-1);
+
+            lm.x = material.mirror.x * rcolor.x;
+            lm.y = material.mirror.y * rcolor.y;
+            lm.z = material.mirror.z * rcolor.z;
+        }
+
+        la.x += (ld.x + ls.x) / wi_d + lm.x;
+        la.y += (ld.y + ls.y) / wi_d + lm.y;
+        la.z += (ld.z + ls.z) / wi_d + lm.z;
+
+    }
+
+    //the clamping
+    theColor.x = (int) clamping(la.x);
+    theColor.y = (int) clamping(la.y);
+    theColor.z = (int) clamping(la.z);
+
+    return theColor;
+
 
 }
 

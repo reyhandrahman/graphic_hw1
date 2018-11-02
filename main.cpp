@@ -19,11 +19,12 @@ int main(int argc, char* argv[])
     // it to a PPM file to demonstrate the usage of the
     // ppm_write function.
 
-	//**************************************************
-
-	scene.init();
-	//for each camera
 	
+
+	//prepare everything, to ease and fasten the computing
+	scene.init();
+	
+	//for each camera
 	for (int cameraIndex = 0; cameraIndex < scene.cameras.size(); cameraIndex++)
 	{
 		int imageWidth = scene.cameras[cameraIndex].image_width;
@@ -32,7 +33,7 @@ int main(int argc, char* argv[])
 		Vec3f e = scene.cameras[cameraIndex].position;
 		Vec3f w = scene.cameras[cameraIndex].gaze * (-1);
 		Vec3f v = scene.cameras[cameraIndex].up;
-		Vec3f u = v.cross(w);
+		Vec3f u = v.cross(w); //cross product
 
 		w = w.normalize();
 		v = v.normalize();
@@ -60,6 +61,7 @@ int main(int argc, char* argv[])
 
 		int index = 0;
 
+
 		//for each pixel
 		for (int j = 0; j < imageHeight; ++j)
 		{
@@ -73,15 +75,18 @@ int main(int argc, char* argv[])
 				Vec3f rayDirection = (s - e).normalize(); 
 				Ray ray(e, rayDirection); 
 
-				float t;
+				//new variables
+				float t; 
 				Material material;
 				Vec3f un;
 
 				//check ray-sphere intersection or ray-triangle intersection
+				//load the materials here
+
 				if (scene.isIntersected(ray, t, material, un)) 
 				{
 					//Vec3i color = scene.computeAmbientLight(ray, t, material, un, scene.max_recursion_depth);
-					Vec3i color    = scene.calculate_color(ray, t, un, material, scene.max_recursion_depth);
+					Vec3i color    = scene.computeShadow(ray, t, un, material, scene.max_recursion_depth);
 					image[index++] = color.x;
 					image[index++] = color.y;
 					image[index++] = color.z;
@@ -97,47 +102,7 @@ int main(int argc, char* argv[])
 		//*****************************************************************
     
 
-    // const RGB BAR_COLOR[8] =
-    // {
-    //     { 255, 255, 255 },  // 100% White
-    //     { 255, 255,   0 },  // Yellow
-    //     {   0, 255, 255 },  // Cyan
-    //     {   0, 255,   0 },  // Green
-    //     { 255,   0, 255 },  // Magenta
-    //     { 255,   0,   0 },  // Red
-    //     {   0,   0, 255 },  // Blue
-    //     {   0,   0,   0 },  // Black
-    // };
-
-    // int width = 640, height = 480;
-    // int columnWidth = width / 8;
-
-    // unsigned char* image = new unsigned char [width * height * 3];
-
-    // int i = 0;
-    // for (int y = 0; y < height; ++y)
-    // {
-    //     for (int x = 0; x < width; ++x)
-    //     {
-    //         int colIdx = x / columnWidth;
-    //         image[i++] = scene.background_color.x;
-    //         image[i++] = scene.background_color.y;
-    //         image[i++] = scene.background_color.z;
-    //     }
-    // }
-
-    // //try fot triangle
-    // for (int y = 0; y < height; ++y)
-    // {
-    //     for (int x = 0; x < width; ++x)
-    //     {
-    //         int colIdx = x / columnWidth;
-    //         image[i++] = scene.background_color.x;
-    //         image[i++] = scene.background_color.y;
-    //         image[i++] = scene.background_color.z;
-    //     }
-    // }
-
+  
 	
     	write_ppm(argv[2], image, imageWidth, imageHeight);
     }
