@@ -198,6 +198,7 @@ void parser::Scene::loadFromXml(const std::string& filepath)
         element = element->NextSiblingElement("Triangle");
     }
 
+    //Get Spheres
     element = root->FirstChildElement("Objects");
     element = element->FirstChildElement("Sphere");
     Sphere sphere;
@@ -221,59 +222,7 @@ void parser::Scene::loadFromXml(const std::string& filepath)
 
 
 }
-
-//THE INIT---------------------------------------------------------------
-void parser::Scene::init()
-{
-
-    //just use the size
-    point_lights_size = point_lights.size();
-
-    // init spheres
-    spheres_size = spheres.size() ; 
-    for(int sph=0 ; sph < spheres_size ; sph++)
-    {
-        spheres[sph].center = vertex_data[spheres[sph].center_vertex_id-1];
-        spheres[sph].mat = materials[spheres[sph].material_id-1] ;
-    }
-
-    // init triangles
-    triangles_size = triangles.size() ;
-    
-    for(int tri=0 ; tri < triangles_size; tri++)
-    {               
-        triangles[tri].vertex0 = vertex_data[triangles[tri].indices.v0_id-1];
-        triangles[tri].vertex1 = vertex_data[triangles[tri].indices.v1_id-1];
-        triangles[tri].vertex2 = vertex_data[triangles[tri].indices.v2_id-1];
-        triangles[tri].compute_normal();
-       
-        triangles[tri].mat = materials[triangles[tri].material_id-1];
-    }
-
-    // init meshes
-    meshes_size = meshes.size() ;
-    for(int msh=0; msh < meshes_size; msh++)
-    {
-        Material msh_mat =  materials[meshes[msh].material_id-1];
-
-        for(int f=0; f < meshes[msh].faces.size(); f++)
-        {
-            Triangle tri(meshes[msh].material_id, meshes[msh].faces[f]);
-
-            tri.vertex0 = vertex_data[tri.indices.v0_id-1];
-            tri.vertex1 = vertex_data[tri.indices.v1_id-1];
-            tri.vertex2 = vertex_data[tri.indices.v2_id-1]; 
-            tri.compute_normal();
-            tri.mat = msh_mat;
-
-            meshes[msh].mtriangles.push_back(tri);  
-        }
-
-     }
-
-   
-}   
-
+ 
 
 
 //check if ray-spehere intersects or triangle-ray intersects
@@ -287,22 +236,21 @@ bool parser::Scene::isIntersected(Ray ray, float& t, Material& material, Vec3f& 
 
 	for (int sphereIndex = 0; sphereIndex < sphereNumber; sphereIndex++) //size from initScene
 	{
-		if (spheres[sphereIndex].is_intersect(ray, t) && t<tMin)
+		if (spheres[sphereIndex].isIntersect(ray, t) && t<tMin)
 		{
 			tMin = t;
-			material = spheres[sphereIndex].mat;
-			//sphereIndexeres[sphereIndex].compute_normal(ray.origin+ray.direction*t);
-			unitNormalVector = spheres[sphereIndex].unit_normal;
+			material = spheres[sphereIndex].sMaterial;
+			unitNormalVector = spheres[sphereIndex].unitNormal;
 		}
 	}
 
 	for (int triangleIndex = 0; triangleIndex < triangleNumber; triangleIndex++)
 	{
-		if (triangles[triangleIndex].is_intersect(ray, t) && t<tMin)
+		if (triangles[triangleIndex].isIntersect(ray, t) && t<tMin)
 		{
 			tMin = t;
-			material = triangles[triangleIndex].mat;
-			unitNormalVector = triangles[triangleIndex].unit_normal;
+			material = triangles[triangleIndex].material;
+			unitNormalVector = triangles[triangleIndex].unitNormal;
 		}
 	}
 
@@ -310,11 +258,11 @@ bool parser::Scene::isIntersected(Ray ray, float& t, Material& material, Vec3f& 
 	{
 		for (int f = 0; f < meshes[meshIndex].faces.size(); f++)
 		{
-			if (meshes[meshIndex].mtriangles[f].is_intersect(ray, t) && t<tMin)
+			if (meshes[meshIndex].triangles[f].isIntersect(ray, t) && t<tMin)
 			{
 				tMin = t;
-				material = meshes[meshIndex].mtriangles[f].mat;
-				unitNormalVector = meshes[meshIndex].mtriangles[f].unit_normal;
+				material = meshes[meshIndex].triangles[f].material;
+				unitNormalVector = meshes[meshIndex].triangles[f].unitNormal;
 			}
 		}
 	}
@@ -337,8 +285,7 @@ float clamping(float intensityValue)
 }
 
 
- //IF USING THESE HERE,ADD THEIR DECLARATION IN PARSER HEADER FILE!!!
-Vec3i parser::Scene::computeShadow(Ray ray, float t,  Vec3f n, Material material, int maxRec)
+ Vec3i parser::Scene::computeShadow(Ray ray, float t,  Vec3f n, Material material, int maxRec)
 {
 
     Vec3i theColor;
@@ -351,10 +298,10 @@ Vec3i parser::Scene::computeShadow(Ray ray, float t,  Vec3f n, Material material
 
     //------------------------------------------------------------
     //for the diffuse shading (the ld)
-    for(int p=0; p<point_lights_size; p++)
+    for(int p=0; p<point_lights.size(); p++)
     {
         //the ray vector
-        Vec3f r = ray.origin + ray.direction*t;
+        Vec3f r = ray.o + ray.d*t;
         Vec3f wi = point_lights[p].position - r;
         float wi_d = wi.dot(wi); //dot product, the real distance 
         wi = wi.normalize(); //normalize it
@@ -387,7 +334,7 @@ Vec3i parser::Scene::computeShadow(Ray ray, float t,  Vec3f n, Material material
 
         //-------------------------------------------------------------------
         //specular shading
-        Vec3f wo = ray.origin - r;
+        Vec3f wo = ray.o - r;
         wo = wo.normalize();
 
         //the half vector
